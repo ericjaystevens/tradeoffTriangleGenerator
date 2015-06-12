@@ -1,0 +1,111 @@
+<html>
+<head>
+</head>
+<body><canvas id="canvas1" width="400" height="500"></canvas>
+<script>
+var canvas = document.getElementById('canvas1');
+var context = canvas.getContext('2d');
+canvas.addEventListener("mousedown", getPosition, false);
+
+var triangleSize = 150;
+
+var bottomLeftX = 50;
+var bottomLeftY = 200;
+//var topX = 150;
+//var topY = 25;
+//var bottomRightX = 250;
+//var bottomRightY = 200;
+var topX = bottomLeftX + triangleSize / 2;
+//use Pythagoras; theorem to get the height of the triangle
+var topY = bottomLeftY - Math.sqrt( (triangleSize * triangleSize) - (triangleSize  / 2 ) * ( triangleSize / 2)) 
+var bottomRightX = bottomLeftX + triangleSize;
+var bottomRightY = bottomLeftY;
+
+
+function getPosition(event) {
+
+	context.clearRect(0, 0, canvas.width, canvas.height);
+	drawTriangle();
+	        
+    var x = event.x - 10;
+    var y = event.y - 10;
+    var distanceFromBottomLeft = Math.sqrt( (x - bottomLeftX) * (x - bottomLeftX) + (y - bottomLeftY) * (y - bottomLeftY ));
+    var distanceFromBottomRight = Math.sqrt( (x - bottomRightX) * (x - bottomRightX) + (y - bottomRightY) * (y - bottomRightY ));
+    var distanceFromTop = Math.sqrt( (x - topX) * (x - topX) + (y - topY) * (y - topY ));
+    var sumOfDistances = distanceFromTop + distanceFromBottomLeft + distanceFromBottomRight;
+
+    
+    var percentageOfBottomLeft = getPercentOfFocus(distanceFromBottomRight, distanceFromTop, triangleSize ) 
+    var percentageOfBottomRight = getPercentOfFocus(distanceFromBottomLeft, distanceFromTop, triangleSize ) 
+    var percentageOfTop = getPercentOfFocus(distanceFromBottomRight, distanceFromBottomLeft, triangleSize ) 
+    // document.frmFocusPercentages.bottomLeftAdjacentArea.value = areaOfAjacentTrinagle;
+   // document.frmFocusPercentages.areaOfTrinagle.value = areaOfTriangle;
+//    window.alert(distanceFromBottomLeft.toString());
+	document.frmFocusPercentages.bottomLeftFocusPercent.value = percentageOfBottomLeft.toString();
+	document.frmFocusPercentages.
+    bottomRightFocusPercent.value = percentageOfBottomRight.toString();
+	document.frmFocusPercentages.topFocusPercent.value = percentageOfTop.toString();
+//    context.fillSytle = "#ffffff";
+	document.frmFocusPercentages.bottomLeftDistance.value = distanceFromBottomLeft.toString();
+	document.frmFocusPercentages.bottomLRightDistance.value = distanceFromBottomRight.toString();
+	document.frmFocusPercentages.topDistance.value = distanceFromTop.toString();
+
+
+    context.beginPath()
+    context.arc(x ,y ,5,0,4*Math.PI);
+    context.stroke();
+    }
+
+function drawTriangle() {
+
+
+	// miter line join (left)
+	context.beginPath();
+	context.moveTo(bottomLeftX, bottomLeftY);
+	context.lineTo(topX, topY);
+	context.lineTo(bottomRightX, bottomRightY);
+	context.lineTo(bottomLeftX, bottomLeftY);
+	context.lineJoin = 'miter';
+	context.stroke();
+}
+
+function getPercentOfFocus(distanceToOtherCorner1, distanceToOtherCorner2, tiangleSize) {
+//  Heron's formula
+//  Area = squareRoot of (s(s-x)(s-y)(s-z))
+//   where s = ½(x + y + z) 
+    var s = ( distanceToOtherCorner1 + distanceToOtherCorner2  + triangleSize) / 2;
+    var areaOfAjacentTrinagle = Math.sqrt( s * (s - distanceToOtherCorner1 ) * (s - distanceToOtherCorner2 ) * (s - triangleSize));
+    var heithOfTrinagle = Math.sqrt( (triangleSize * triangleSize) - (triangleSize  / 2 ) * ( triangleSize / 2));
+    var baseOfTrinagle = triangleSize; 
+    var areaOfTriangle = baseOfTrinagle * heithOfTrinagle / 2;
+    var percentageOfFocus = areaOfAjacentTrinagle / areaOfTriangle;
+    return Math.round(percentageOfFocus * 100);
+
+}
+
+context.lineWidth = 5;		        
+drawTriangle();			      
+			            
+</script>
+<form name=frmFocusPercentages>
+    Area of triangle adgavcent to botom left
+	<input type="text" name="bottomLeftAdjacentArea" value="" /> <br />
+    Area of triangle 
+	<input type="text" name="areaOfTrinagle" value="" /> <br />
+    <br />
+	percentage From Bottom Left
+	<input type="text" name="bottomLeftFocusPercent" value="" /> <br />
+	percentage From Bottom Right
+	<input type="text" name="bottomRightFocusPercent" value="" /><br />
+	Percentage From Top
+	<input type="text" name="topFocusPercent" value="" /><br />
+	<br />
+	Distance from Bootom Left:
+	<input type="type" name="bottomLeftDistance" value=""	/> <br />
+	Distance from botom right:
+	<input type="type" name="bottomLRightDistance" value=""	/> <br />
+	Distance From Top:
+	<input type="type" name="topDistance" value="" /> <br />
+</form>
+</body>
+</html>
